@@ -1,5 +1,7 @@
 ﻿using Lumia.Imaging;
 using Lumia.Imaging.Adjustments;
+using Lumia.Imaging.Artistic;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -34,12 +36,12 @@ namespace NoHands
         MediaCapture mediaCapture;
 
         private SwapChainPanelRenderer m_renderer;
-        private SwapChainPanelRenderer m_renderer2;
 
         private GrayscaleEffect _grayscaleEffect;
         private ColorBoostEffect _colorboostEffect;
         private LensBlurEffect _lensblurEffect;
         private HueSaturationEffect _hueSaturationEffect;
+        private AntiqueEffect _antiqueEffect;
 
         public MainPage()
         {
@@ -137,10 +139,10 @@ namespace NoHands
             _colorboostEffect.Gain = 0.75;
             _hueSaturationEffect = new HueSaturationEffect();
             _lensblurEffect = new LensBlurEffect();
-
+            _antiqueEffect = new AntiqueEffect();
             ApplyEffectAsync(fPhotoStream, _grayscaleEffect, GreyScaleThumb);
             ApplyEffectAsync(fPhotoStream, _colorboostEffect, ColorBoostThumb);
-            ApplyEffectAsync(fPhotoStream, _colorboostEffect, SepiaThumb);
+            ApplyEffectAsync(fPhotoStream, _antiqueEffect, SepiaThumb);
             ApplyEffectAsync(fPhotoStream, _lensblurEffect, LensBlurThumb);
             ApplyEffectAsync(fPhotoStream, _hueSaturationEffect, HueSaturationThumb);
         }
