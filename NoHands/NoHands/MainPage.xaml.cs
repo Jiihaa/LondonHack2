@@ -38,6 +38,8 @@ namespace NoHands
 
         private GrayscaleEffect _grayscaleEffect;
         private ColorBoostEffect _colorboostEffect;
+        private LensBlurEffect _lensblurEffect;
+        private HueSaturationEffect _hueSaturationEffect;
 
         public MainPage()
         {
@@ -130,19 +132,29 @@ namespace NoHands
             var _bmp = new BitmapImage();
             _bmp.SetSource(fPhotoStream);
             PreviewImage.Source = _bmp;
-            ApplyEffectAsync(fPhotoStream);
+            _grayscaleEffect = new GrayscaleEffect();
+            _colorboostEffect = new ColorBoostEffect();
+            _colorboostEffect.Gain = 0.75;
+            _hueSaturationEffect = new HueSaturationEffect();
+            _lensblurEffect = new LensBlurEffect();
+
+            ApplyEffectAsync(fPhotoStream, _grayscaleEffect, GreyScaleThumb);
+            ApplyEffectAsync(fPhotoStream, _colorboostEffect, ColorBoostThumb);
+            ApplyEffectAsync(fPhotoStream, _colorboostEffect, SepiaThumb);
+            ApplyEffectAsync(fPhotoStream, _lensblurEffect, LensBlurThumb);
+            ApplyEffectAsync(fPhotoStream, _hueSaturationEffect, HueSaturationThumb);
         }
 
         /// <summary>
         /// TODO: Apply filter to image
         /// </summary>
         /// <param name="fileStream"></param>
-        private async void ApplyEffectAsync(IRandomAccessStream fileStream)
+        private async void ApplyEffectAsync(IRandomAccessStream fileStream, IImageProvider provider, SwapChainPanel target)
         {
-            _grayscaleEffect = new GrayscaleEffect();
-            _colorboostEffect = new ColorBoostEffect();
+            //_grayscaleEffect = new GrayscaleEffect();
+            //_colorboostEffect = new ColorBoostEffect();
 
-            m_renderer = new SwapChainPanelRenderer(_grayscaleEffect, GreyScaleThumb);
+            m_renderer = new SwapChainPanelRenderer(provider, target);
 
             try
             {
@@ -150,13 +162,8 @@ namespace NoHands
                 fileStream.Seek(0);
 
                 // Set the imageSource on the effect and render.
-                ((IImageConsumer)_grayscaleEffect).Source = new RandomAccessStreamImageSource(fileStream);
+                ((IImageConsumer)provider).Source = new RandomAccessStreamImageSource(fileStream);
                 await m_renderer.RenderAsync();
-                fileStream.Seek(0);
-                m_renderer2 = new SwapChainPanelRenderer(_colorboostEffect, ColorBoostThumb);
-                ((IImageConsumer)_colorboostEffect).Source = new RandomAccessStreamImageSource(fileStream);
-                await m_renderer2.RenderAsync();
-
             }
             catch (Exception exception)
             {

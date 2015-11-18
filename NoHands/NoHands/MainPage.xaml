@@ -15,8 +15,11 @@
         <CaptureElement x:Name="captureElement" Grid.Row="0" Stretch="Uniform" Tapped="OnTap"/>
         <Image x:Name="PreviewImage" Grid.Row="0" Stretch="Uniform" Visibility="Collapsed"/>
         <RelativePanel Grid.Row="1" Background="Black">        
-            <SwapChainPanel x:Name="GreyScaleThumb" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="150" Height="150"/>
-            <SwapChainPanel x:Name="ColorBoostThumb" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="150" Height="150"/>
+            <SwapChainPanel x:Name="GreyScaleThumb" Width="150" Height="150"/>
+            <SwapChainPanel x:Name="ColorBoostThumb" RelativePanel.RightOf="GreyScaleThumb" Width="150" Height="150"/>
+            <SwapChainPanel x:Name="SepiaThumb" RelativePanel.RightOf="ColorBoostThumb" Width="150" Height="150"/>
+            <SwapChainPanel x:Name="LensBlurThumb" RelativePanel.RightOf="SepiaThumb" Width="150" Height="150"/>
+            <SwapChainPanel x:Name="HueSaturationThumb" RelativePanel.RightOf="LensBlurThumb" Width="150" Height="150"/>
         </RelativePanel>
 
     </Grid>
