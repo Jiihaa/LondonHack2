@@ -8,9 +8,16 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <CaptureElement x:Name="captureElement" HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="UniformToFill" Tapped="OnTap">
-        </CaptureElement>
-        <Image x:Name="PreviewImage" HorizontalAlignment="Left" VerticalAlignment="Top" Width="300" Height="300"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="4*"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+        <CaptureElement x:Name="captureElement" Grid.Row="0" Stretch="Uniform" Tapped="OnTap"/>
+        <Image x:Name="PreviewImage" Grid.Row="0" Stretch="Uniform" Visibility="Collapsed"/>
+        <RelativePanel Grid.Row="1" Background="Black">        
+            <SwapChainPanel x:Name="GreyScaleThumb" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="150" Height="150"/>
+            <SwapChainPanel x:Name="ColorBoostThumb" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="150" Height="150"/>
+        </RelativePanel>
 
     </Grid>
 </Page>

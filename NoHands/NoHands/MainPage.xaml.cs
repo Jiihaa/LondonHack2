@@ -33,6 +33,12 @@ namespace NoHands
         bool frontCam;
         MediaCapture mediaCapture;
 
+        private SwapChainPanelRenderer m_renderer;
+        private SwapChainPanelRenderer m_renderer2;
+
+        private GrayscaleEffect _grayscaleEffect;
+        private ColorBoostEffect _colorboostEffect;
+
         public MainPage()
         {
             this.InitializeComponent();
@@ -43,8 +49,7 @@ namespace NoHands
         private async void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
             mediaCapture = new MediaCapture();
-            DeviceInformationCollection devices =
-        await DeviceInformation.FindAllAsync(DeviceClass.VideoCapture);
+            DeviceInformationCollection devices = await DeviceInformation.FindAllAsync(DeviceClass.VideoCapture);
 
             // Use the front camera if found one
             if (devices == null) return;
@@ -118,16 +123,15 @@ namespace NoHands
             await mediaCapture.CapturePhotoToStreamAsync(imageProperties, fPhotoStream);
             await fPhotoStream.FlushAsync();
             fPhotoStream.Seek(0);
+            await mediaCapture.StopPreviewAsync();
+            captureElement.Visibility = Visibility.Collapsed;
+            PreviewImage.Visibility = Visibility.Visible;
 
             var _bmp = new BitmapImage();
             _bmp.SetSource(fPhotoStream);
             PreviewImage.Source = _bmp;
+            ApplyEffectAsync(fPhotoStream);
         }
-
-        private SwapChainPanelRenderer m_renderer;
-        private WriteableBitmap _writeableBitmap;
-        private GrayscaleEffect _grayscaleEffect;
-        private BrightnessEffect _brightnessEffect;
 
         /// <summary>
         /// TODO: Apply filter to image
@@ -135,15 +139,10 @@ namespace NoHands
         /// <param name="fileStream"></param>
         private async void ApplyEffectAsync(IRandomAccessStream fileStream)
         {
-            double scaleFactor = 1.0;
-            scaleFactor = DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel;
-
-            _writeableBitmap = new WriteableBitmap((int)(Window.Current.Bounds.Width * scaleFactor), (int)(Window.Current.Bounds.Height * scaleFactor));
             _grayscaleEffect = new GrayscaleEffect();
-            _brightnessEffect = new BrightnessEffect(_grayscaleEffect);
-            //            m_renderer = new SwapChainPanelRenderer(_brightnessEffect, SwapChainPanelTarget);
+            _colorboostEffect = new ColorBoostEffect();
 
-            string errorMessage = null;
+            m_renderer = new SwapChainPanelRenderer(_grayscaleEffect, GreyScaleThumb);
 
             try
             {
@@ -151,13 +150,17 @@ namespace NoHands
                 fileStream.Seek(0);
 
                 // Set the imageSource on the effect and render.
-                ((IImageConsumer)_grayscaleEffect).Source = new Lumia.Imaging.RandomAccessStreamImageSource(fileStream);
+                ((IImageConsumer)_grayscaleEffect).Source = new RandomAccessStreamImageSource(fileStream);
                 await m_renderer.RenderAsync();
+                fileStream.Seek(0);
+                m_renderer2 = new SwapChainPanelRenderer(_colorboostEffect, ColorBoostThumb);
+                ((IImageConsumer)_colorboostEffect).Source = new RandomAccessStreamImageSource(fileStream);
+                await m_renderer2.RenderAsync();
 
             }
             catch (Exception exception)
             {
-                errorMessage = exception.Message;
+                System.Diagnostics.Debug.WriteLine(exception.Message);
             }
         }
     }
