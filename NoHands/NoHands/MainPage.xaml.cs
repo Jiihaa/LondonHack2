@@ -162,7 +162,7 @@ namespace NoHands
 
         private async void OnTap(object sender, TappedRoutedEventArgs e)
         {
-            inking_initialization();
+            
 
             ImageEncodingProperties imageProperties = ImageEncodingProperties.CreateJpeg();
             //var fPhotoStream = new InMemoryRandomAccessStream();
@@ -173,6 +173,8 @@ namespace NoHands
             await mediaCapture.StopPreviewAsync();
             captureElement.Visibility = Visibility.Collapsed;
             PreviewImage.Visibility = Visibility.Visible;
+
+          
 
             var _bmp = new BitmapImage();
             _bmp.SetSource(fPhotoStream);
@@ -196,10 +198,17 @@ namespace NoHands
 
             using (_antiqueEffect = new AntiqueEffect())
                 await ApplyEffectAsync(fPhotoStream, _antiqueEffect, SepiaThumb);
+
+
+            
+            
+
+            inking_initialization();
+            myInkCanvas.Visibility = Visibility.Visible;
         }
 
         /// <summary>
-        /// TODO: Apply filter to image
+        /// Apply filter to image
         /// </summary>
         /// <param name="fileStream"></param>
         private async Task ApplyEffectAsync(IRandomAccessStream fileStream, IImageProvider provider, SwapChainPanel target)
@@ -289,7 +298,8 @@ namespace NoHands
 
         private void NormalThumb_Tapped(object sender, TappedRoutedEventArgs e)
         {
-
+            PreviewImage.Visibility = Visibility.Visible;
+            FilteredImage.Visibility = Visibility.Collapsed;
         }
 
         private void Save_Click(object sender, RoutedEventArgs e)

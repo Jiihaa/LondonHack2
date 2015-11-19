@@ -19,7 +19,10 @@ namespace NoHands
 
         public void inking_initialization()
         {
-            return;
+
+            
+            myInkCanvas.Width = rootGrid.ActualWidth;
+            myInkCanvas.Height = rootGrid.ActualHeight;
 
             InkDrawingAttributes drawingAttributes = new InkDrawingAttributes();
             drawingAttributes.Color = Windows.UI.Colors.Black;
@@ -37,9 +40,9 @@ namespace NoHands
             }
 
 
-            InkCanvas.InkPresenter.UpdateDefaultDrawingAttributes(
+            myInkCanvas.InkPresenter.UpdateDefaultDrawingAttributes(
                 drawingAttributes);
-            InkCanvas.InkPresenter.InputDeviceTypes =
+            myInkCanvas.InkPresenter.InputDeviceTypes =
                 Windows.UI.Core.CoreInputDeviceTypes.Mouse |
                 Windows.UI.Core.CoreInputDeviceTypes.Pen |
                 Windows.UI.Core.CoreInputDeviceTypes.Touch;
@@ -49,23 +52,24 @@ namespace NoHands
 
         void Clear_Click(object sender, RoutedEventArgs e)
         {
-            InkCanvas.InkPresenter.StrokeContainer.Clear();
+            myInkCanvas.InkPresenter.StrokeContainer.Clear();
         }
 
         async void Recognize_Click(object sender, RoutedEventArgs e)
         {
             IReadOnlyList<InkStroke> currentStrokes =
-                InkCanvas.InkPresenter.StrokeContainer.GetStrokes();
+                myInkCanvas.InkPresenter.StrokeContainer.GetStrokes();
             if (currentStrokes.Count > 0)
             {
                 
 
                 var recognitionResults = await inkRecognizerContainer.RecognizeAsync(
-                    InkCanvas.InkPresenter.StrokeContainer,
+                    myInkCanvas.InkPresenter.StrokeContainer,
                     InkRecognitionTarget.All);
 
                 if (recognitionResults.Count > 0)
                 {
+                    
                     // Display recognition result
                     string str = "Recognition result:";
                     foreach (var r in recognitionResults)
