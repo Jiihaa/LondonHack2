@@ -157,6 +157,8 @@ namespace NoHands
 
         private async void OnTap(object sender, TappedRoutedEventArgs e)
         {
+            inking_initialization();
+
             ImageEncodingProperties imageProperties = ImageEncodingProperties.CreateJpeg();
             //var fPhotoStream = new InMemoryRandomAccessStream();
 
