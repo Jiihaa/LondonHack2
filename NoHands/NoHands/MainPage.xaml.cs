@@ -284,7 +284,8 @@ namespace NoHands
 
         private void NormalThumb_Tapped(object sender, TappedRoutedEventArgs e)
         {
-
+            PreviewImage.Visibility = Visibility.Visible;
+            FilteredImage.Visibility = Visibility.Collapsed;
         }
     }
 }
