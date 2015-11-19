@@ -37,6 +37,7 @@ namespace NoHands
     {
         bool frontCam;
         MediaCapture mediaCapture;
+        InMemoryRandomAccessStream fPhotoStream = new InMemoryRandomAccessStream();
 
         private GrayscaleEffect _grayscaleEffect;
         private ColorBoostEffect _colorboostEffect;
@@ -157,7 +158,7 @@ namespace NoHands
         private async void OnTap(object sender, TappedRoutedEventArgs e)
         {
             ImageEncodingProperties imageProperties = ImageEncodingProperties.CreateJpeg();
-            var fPhotoStream = new InMemoryRandomAccessStream();
+            //var fPhotoStream = new InMemoryRandomAccessStream();
 
             mediaCapture.CapturePhotoToStreamAsync(imageProperties, fPhotoStream).AsTask().Wait();
             fPhotoStream.FlushAsync().AsTask().Wait();
@@ -215,19 +216,71 @@ namespace NoHands
             
         }
 
-        private void GreyScaleThumb_Tapped(object sender, TappedRoutedEventArgs e)
+        private async void GreyScaleThumb_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            return;
-            // TODO
+            FilteredImage.Width = PreviewImage.ActualWidth;
+            FilteredImage.Height = PreviewImage.ActualHeight;
+
             PreviewImage.Visibility = Visibility.Collapsed;
-            GreyScaleThumb.SetValue(Grid.RowProperty, 0);
-            
-            GreyScaleThumb.Width = this.ActualWidth;
-            GreyScaleThumb.Height = this.ActualHeight;
-            GreyScaleThumb.UpdateLayout();
+            FilteredImage.Visibility = Visibility.Visible;
+            using (_grayscaleEffect = new GrayscaleEffect())
+                await ApplyEffectAsync(fPhotoStream, _grayscaleEffect, FilteredImage);
+
         }
 
-        private void ColorBoostThumb_Tapped(object sender, TappedRoutedEventArgs e)
+        private async void ColorBoostThumb_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            FilteredImage.Width = PreviewImage.ActualWidth;
+            FilteredImage.Height = PreviewImage.ActualHeight;
+
+            PreviewImage.Visibility = Visibility.Collapsed;
+            FilteredImage.Visibility = Visibility.Visible;
+            using (_colorboostEffect = new ColorBoostEffect())
+            {
+                _colorboostEffect.Gain = 0.75;
+                await ApplyEffectAsync(fPhotoStream, _colorboostEffect, FilteredImage);
+            }
+
+        }
+
+        private async void SepiaThumb_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            FilteredImage.Width = PreviewImage.ActualWidth;
+            FilteredImage.Height = PreviewImage.ActualHeight;
+
+            PreviewImage.Visibility = Visibility.Collapsed;
+            FilteredImage.Visibility = Visibility.Visible;
+            using (_antiqueEffect = new AntiqueEffect())
+                await ApplyEffectAsync(fPhotoStream, _antiqueEffect, FilteredImage);
+
+
+        }
+
+        private async void LensBlurThumb_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            FilteredImage.Width = PreviewImage.ActualWidth;
+            FilteredImage.Height = PreviewImage.ActualHeight;
+
+            PreviewImage.Visibility = Visibility.Collapsed;
+            FilteredImage.Visibility = Visibility.Visible;
+            using (_lensblurEffect = new LensBlurEffect())
+                await ApplyEffectAsync(fPhotoStream, _lensblurEffect, FilteredImage);
+
+
+        }
+
+        private async void HueSaturationThumb_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            FilteredImage.Width = PreviewImage.ActualWidth;
+            FilteredImage.Height = PreviewImage.ActualHeight;
+
+            PreviewImage.Visibility = Visibility.Collapsed;
+            FilteredImage.Visibility = Visibility.Visible;
+            using (_hueSaturationEffect = new HueSaturationEffect())
+                await ApplyEffectAsync(fPhotoStream, _hueSaturationEffect, FilteredImage);
+        }
+
+        private void NormalThumb_Tapped(object sender, TappedRoutedEventArgs e)
         {
 
         }
