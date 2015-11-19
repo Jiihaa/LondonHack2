@@ -13,6 +13,7 @@
             </CommandBar.Content>
             <AppBarButton Icon="Accept" Label="appbarbutton" Click="Recognize_Click"/>
             <AppBarButton Icon="Cancel" Label="appbarbutton" Click="Clear_Click"/>
+            <AppBarButton x:Name="SaveButton" Icon="Save" Label="appbarbutton" Click="Save_Click"/>
         </CommandBar>
     </Page.BottomAppBar>
 
@@ -30,7 +31,7 @@
         <Image x:Name="PreviewImage" Grid.Row="0" Stretch="Uniform" Visibility="Collapsed"/>
         <SwapChainPanel x:Name="FilteredImage" Grid.Row="0" Visibility="Collapsed"/>
         <RelativePanel Grid.Row="1" Background="Black">
-            <Image x:Name="NormalThumb" Width="150" Height="150" HorizontalAlignment="Center"/>
+            <Image x:Name="NormalThumb" Width="150" Height="150" HorizontalAlignment="Center" Tapped="NormalThumb_Tapped"/>
             <SwapChainPanel x:Name="GreyScaleThumb" RelativePanel.RightOf="NormalThumb" Width="150" Height="150" Tapped="GreyScaleThumb_Tapped"/>
             <SwapChainPanel x:Name="ColorBoostThumb" RelativePanel.RightOf="GreyScaleThumb" Width="150" Height="150" Tapped="ColorBoostThumb_Tapped"/>
             <SwapChainPanel x:Name="SepiaThumb" RelativePanel.RightOf="ColorBoostThumb" Width="150" Height="150" Tapped="SepiaThumb_Tapped"/>
