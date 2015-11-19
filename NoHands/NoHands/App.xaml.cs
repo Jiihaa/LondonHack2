@@ -14,6 +14,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using System.Diagnostics;
 
 namespace NoHands
 {
@@ -37,7 +38,7 @@ namespace NoHands
         /// will be used such as when the application is launched to open a specific file.
         /// </summary>
         /// <param name="e">Details about the launch request and process.</param>
-        protected override void OnLaunched(LaunchActivatedEventArgs e)
+        protected override async void OnLaunched(LaunchActivatedEventArgs e)
         {
 
 #if DEBUG
@@ -46,6 +47,9 @@ namespace NoHands
                 this.DebugSettings.EnableFrameRateCounter = true;
             }
 #endif
+
+            var storageFile = await Windows.Storage.StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///VoiceCommands.xml"));
+            await Windows.ApplicationModel.VoiceCommands.VoiceCommandDefinitionManager.InstallCommandDefinitionsFromStorageFileAsync(storageFile);
 
             Frame rootFrame = Window.Current.Content as Frame;
 
@@ -100,6 +104,51 @@ namespace NoHands
             var deferral = e.SuspendingOperation.GetDeferral();
             //TODO: Save application state and stop any background activity
             deferral.Complete();
+        }
+
+        protected override void OnActivated(IActivatedEventArgs args)
+        {
+
+            Frame rootFrame = Window.Current.Content as Frame;
+            if (rootFrame == null)
+            {
+                // Create a Frame to act as the navigation context and navigate to the first page        
+                rootFrame = new Frame();
+                rootFrame.NavigationFailed += OnNavigationFailed;
+                // Place the frame in the current Window         
+                Window.Current.Content = rootFrame;
+            }
+
+            switch (args.Kind)
+            {
+                case ActivationKind.VoiceCommand:
+                    HandleVoiceCommand(args, rootFrame);
+                    break;
+                default:
+                    break;
+            }
+            Window.Current.Activate();
+
+            base.OnActivated(args);
+        }
+
+        private void HandleVoiceCommand(IActivatedEventArgs args, Frame frame)
+        {
+            var commandArgs = args as VoiceCommandActivatedEventArgs;
+            var speechRecognitionResult = commandArgs.Result;
+            var command = speechRecognitionResult.Text;
+            var voiceCommandName = speechRecognitionResult.RulePath[0];
+            var textSpoken = speechRecognitionResult.Text;
+            Debug.WriteLine("Command: " + command);
+            Debug.WriteLine("Text spoken: " + textSpoken);
+            switch (voiceCommandName)
+            {
+                case "LaunchApp":
+                    frame.Navigate(typeof(MainPage));
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

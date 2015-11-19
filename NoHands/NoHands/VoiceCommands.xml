@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<VoiceCommands xmlns="http://schemas.microsoft.com/voicecommands/1.2">
+  <CommandSet xml:lang="en-us" Name="HoLCommandSet_en-us">
+    <AppName> No Hands </AppName>
+    <Example> Launch </Example>
+    <Command Name="LaunchApp">
+      <Example>launch</Example>
+      <ListenFor>launch</ListenFor>
+      <Feedback>Opening your No Hands app</Feedback>
+      <Navigate />
+    </Command>
+
+    
+
+  </CommandSet>
+  
+</VoiceCommands>
