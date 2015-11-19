@@ -31,14 +31,19 @@ namespace NoHands
             drawingAttributes.FitToCurve = true;
 
 
-
-            inkRecognizerContainer = new InkRecognizerContainer();
-            recoView = inkRecognizerContainer.GetRecognizers();
-            if (recoView.Count > 0)
+            try
             {
-                inkRecognizerContainer.SetDefaultRecognizer(recoView.First());
+                inkRecognizerContainer = new InkRecognizerContainer();
+                recoView = inkRecognizerContainer.GetRecognizers();
+                if (recoView.Count > 0)
+                {
+                    inkRecognizerContainer.SetDefaultRecognizer(recoView.First());
+                }
             }
-
+            catch (Exception)
+            {
+                System.Diagnostics.Debug.WriteLine("Couldn't initialize InkRecognizer");
+            }
 
             myInkCanvas.InkPresenter.UpdateDefaultDrawingAttributes(
                 drawingAttributes);
