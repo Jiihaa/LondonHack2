@@ -22,13 +22,10 @@
             <RowDefinition Height="4*"/>
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
-        <Grid x:Name="myCanvasGrid" Grid.Row="0" Background="Transparent" >
-            <Canvas x:Name="myCanvas" >
-                <InkCanvas x:Name="myInkCanvas" Canvas.ZIndex="100" Visibility="Collapsed"/>
-            </Canvas>
-        </Grid>
+           
         <CaptureElement x:Name="captureElement" Grid.Row="0" Stretch="Uniform" Tapped="OnTap"/>
         <Image x:Name="PreviewImage" Grid.Row="0" Stretch="Uniform" Visibility="Collapsed"/>
+        <InkCanvas x:Name="myInkCanvas" Canvas.ZIndex="100" Visibility="Collapsed"/>
         <SwapChainPanel x:Name="FilteredImage" Grid.Row="0" Visibility="Collapsed"/>
         <RelativePanel Grid.Row="1" Background="Black">
             <Image x:Name="NormalThumb" Width="150" Height="150" HorizontalAlignment="Center" Tapped="NormalThumb_Tapped"/>

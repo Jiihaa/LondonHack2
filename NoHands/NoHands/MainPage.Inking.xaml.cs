@@ -20,15 +20,9 @@ namespace NoHands
         public void inking_initialization()
         {
 
-            myCanvas.Width = myCanvasGrid.ActualWidth;
-            myCanvas.Height = myCanvasGrid.ActualHeight;
-            myInkCanvas.Width = myCanvasGrid.ActualWidth;
-            myInkCanvas.Height = myCanvasGrid.ActualHeight;
-
-            myCanvas.SetValue(Canvas.ZIndexProperty, 99);
-            myInkCanvas.SetValue(Canvas.ZIndexProperty, 100);
-
-
+            
+            myInkCanvas.Width = rootGrid.ActualWidth;
+            myInkCanvas.Height = rootGrid.ActualHeight;
 
             InkDrawingAttributes drawingAttributes = new InkDrawingAttributes();
             drawingAttributes.Color = Windows.UI.Colors.Black;
