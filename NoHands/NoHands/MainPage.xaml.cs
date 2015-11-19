@@ -13,8 +13,11 @@ using Windows.Devices.Enumeration;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Graphics.Display;
+using Windows.Graphics.Imaging;
 using Windows.Media.Capture;
 using Windows.Media.MediaProperties;
+using Windows.Storage;
+using Windows.Storage.Pickers;
 using Windows.Storage.Streams;
 using Windows.UI.Notifications;
 using Windows.UI.Xaml;
@@ -39,6 +42,8 @@ namespace NoHands
         MediaCapture mediaCapture;
         InMemoryRandomAccessStream fPhotoStream = new InMemoryRandomAccessStream();
 
+
+
         private GrayscaleEffect _grayscaleEffect;
         private ColorBoostEffect _colorboostEffect;
         private LensBlurEffect _lensblurEffect;
@@ -62,7 +67,7 @@ namespace NoHands
                     cur.Value.Unregister(true);
                 }
             }
-
+            
             // Build the new background task
             await BackgroundExecutionManager.RequestAccessAsync();
 
@@ -299,7 +304,38 @@ namespace NoHands
 
         private void Save_Click(object sender, RoutedEventArgs e)
         {
+            
+            SaveImage();
             Frame.Navigate(typeof(StorageCamera));
+
         }
+
+        public async void SaveImage()
+        {
+            StorageFolder appFolder = await KnownFolders.PicturesLibrary.CreateFolderAsync("NoHandsAppFolder", CreationCollisionOption.OpenIfExists);
+            StorageFile myfile = await appFolder.CreateFileAsync("myfile.jpg", CreationCollisionOption.ReplaceExisting);
+            var img = PreviewImage.Source as WriteableBitmap;
+            BitmapEncoder encoder = await BitmapEncoder.CreateAsync(
+        BitmapEncoder.JpegEncoderId,
+        await myfile.OpenAsync(FileAccessMode.ReadWrite));
+
+            Stream pixelStream = img.PixelBuffer.AsStream();
+
+            byte[] pixels = new byte[pixelStream.Length];
+
+            await pixelStream.ReadAsync(pixels, 0, pixels.Length);
+
+            encoder.SetPixelData(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Ignore, (uint)img.PixelWidth, (uint)img.PixelHeight, 96.0, 96.0, pixels);
+
+            await encoder.FlushAsync();
+        }
+        public async void OpenStorage()
+        {
+
+        }
+
+
+
+
     }
 }
