@@ -6,6 +6,15 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
+    <Page.BottomAppBar>
+        <CommandBar>
+            <CommandBar.Content>
+                <Grid/>
+            </CommandBar.Content>
+            <AppBarButton Icon="Accept" Label="appbarbutton" Click="Recognize_Click"/>
+            <AppBarButton Icon="Cancel" Label="appbarbutton" Click="Clear_Click"/>
+        </CommandBar>
+    </Page.BottomAppBar>
 
     <Grid x:Name="rootGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
@@ -14,9 +23,8 @@
         </Grid.RowDefinitions>
         <CaptureElement x:Name="captureElement" Grid.Row="0" Stretch="Uniform" Tapped="OnTap"/>
         <Image x:Name="PreviewImage" Grid.Row="0" Stretch="Uniform" Visibility="Collapsed"/>
-        <SwapChainPanel x:Name="FilteredImage" Grid.Row="0" Visibility="Collapsed"/>
-        <RelativePanel x:Name="relativeRoot" Grid.Row="1" Background="Black">
-            <Image x:Name="NormalThumb" Width="150" Height="150" HorizontalAlignment="Center" Tapped="NormalThumb_Tapped"/>
+        <RelativePanel Grid.Row="1" Background="Black">
+            <Image x:Name="NormalThumb" Width="150" Height="150" HorizontalAlignment="Center"/>
             <SwapChainPanel x:Name="GreyScaleThumb" RelativePanel.RightOf="NormalThumb" Width="150" Height="150" Tapped="GreyScaleThumb_Tapped"/>
             <SwapChainPanel x:Name="ColorBoostThumb" RelativePanel.RightOf="GreyScaleThumb" Width="150" Height="150" Tapped="ColorBoostThumb_Tapped"/>
             <SwapChainPanel x:Name="SepiaThumb" RelativePanel.RightOf="ColorBoostThumb" Width="150" Height="150" Tapped="SepiaThumb_Tapped"/>
