@@ -34,6 +34,11 @@ namespace NoHands
         {
             public ImageSource Source { get; set; }
         }
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+        }
+
         private void Grid_DragEnter(object sender, DragEventArgs e)
         {
             e.AcceptedOperation = DataPackageOperation.Copy;

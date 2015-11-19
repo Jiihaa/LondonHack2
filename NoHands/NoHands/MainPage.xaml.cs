@@ -287,5 +287,10 @@ namespace NoHands
             PreviewImage.Visibility = Visibility.Visible;
             FilteredImage.Visibility = Visibility.Collapsed;
         }
+
+        private void Save_Click(object sender, RoutedEventArgs e)
+        {
+            Frame.Navigate(typeof(StorageCamera));
+        }
     }
 }
