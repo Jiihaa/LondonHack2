@@ -165,21 +165,20 @@ namespace NoHands
             
 
             ImageEncodingProperties imageProperties = ImageEncodingProperties.CreateJpeg();
-            //var fPhotoStream = new InMemoryRandomAccessStream();
 
             mediaCapture.CapturePhotoToStreamAsync(imageProperties, fPhotoStream).AsTask().Wait();
+
             fPhotoStream.FlushAsync().AsTask().Wait();
             fPhotoStream.Seek(0);
+            WriteableBitmap bitter = new WriteableBitmap(100, 100);
+            bitter.SetSource(fPhotoStream);
+
             await mediaCapture.StopPreviewAsync();
             captureElement.Visibility = Visibility.Collapsed;
             PreviewImage.Visibility = Visibility.Visible;
 
-          
-
-            var _bmp = new BitmapImage();
-            _bmp.SetSource(fPhotoStream);
-            PreviewImage.Source = _bmp;
-            NormalThumb.Source = _bmp;
+            PreviewImage.Source = bitter;
+            NormalThumb.Source = bitter;
 
             using (_grayscaleEffect = new GrayscaleEffect())
                 await ApplyEffectAsync(fPhotoStream, _grayscaleEffect, GreyScaleThumb);
@@ -312,22 +311,23 @@ namespace NoHands
 
         public async void SaveImage()
         {
+            Guid photoID = System.Guid.NewGuid();
+            string photolocation = photoID.ToString() + ".jpg";  //file name
             StorageFolder appFolder = await KnownFolders.PicturesLibrary.CreateFolderAsync("NoHandsAppFolder", CreationCollisionOption.OpenIfExists);
-            StorageFile myfile = await appFolder.CreateFileAsync("myfile.jpg", CreationCollisionOption.ReplaceExisting);
-            var img = PreviewImage.Source as WriteableBitmap;
-            BitmapEncoder encoder = await BitmapEncoder.CreateAsync(
-        BitmapEncoder.JpegEncoderId,
-        await myfile.OpenAsync(FileAccessMode.ReadWrite));
+            StorageFile myfile = await appFolder.CreateFileAsync(photolocation, CreationCollisionOption.ReplaceExisting);
 
-            Stream pixelStream = img.PixelBuffer.AsStream();
+            WriteableBitmap writeableBitmap = (WriteableBitmap)PreviewImage.Source;
 
+            IRandomAccessStream stream = await myfile.OpenAsync(FileAccessMode.ReadWrite);
+            BitmapEncoder encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.JpegEncoderId, stream);
+            // Get pixels of the WriteableBitmap object 
+            Stream pixelStream = writeableBitmap.PixelBuffer.AsStream();
             byte[] pixels = new byte[pixelStream.Length];
-
             await pixelStream.ReadAsync(pixels, 0, pixels.Length);
-
-            encoder.SetPixelData(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Ignore, (uint)img.PixelWidth, (uint)img.PixelHeight, 96.0, 96.0, pixels);
-
+            // Save the image file with jpg extension 
+            encoder.SetPixelData(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Ignore, (uint)writeableBitmap.PixelWidth, (uint)writeableBitmap.PixelHeight, 96.0, 96.0, pixels);
             await encoder.FlushAsync();
+
         }
         public async void OpenStorage()
         {
