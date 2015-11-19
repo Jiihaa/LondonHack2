@@ -21,8 +21,10 @@
             <RowDefinition Height="4*"/>
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0" Background="Transparent">
-            <InkCanvas x:Name="InkCanvas" />
+        <Grid x:Name="myCanvasGrid" Grid.Row="0" Background="Transparent" >
+            <Canvas x:Name="myCanvas" >
+                <InkCanvas x:Name="myInkCanvas" Canvas.ZIndex="100" Visibility="Collapsed"/>
+            </Canvas>
         </Grid>
         <CaptureElement x:Name="captureElement" Grid.Row="0" Stretch="Uniform" Tapped="OnTap"/>
         <Image x:Name="PreviewImage" Grid.Row="0" Stretch="Uniform" Visibility="Collapsed"/>

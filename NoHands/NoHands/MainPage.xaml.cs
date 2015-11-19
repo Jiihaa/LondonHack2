@@ -157,7 +157,7 @@ namespace NoHands
 
         private async void OnTap(object sender, TappedRoutedEventArgs e)
         {
-            inking_initialization();
+            
 
             ImageEncodingProperties imageProperties = ImageEncodingProperties.CreateJpeg();
             //var fPhotoStream = new InMemoryRandomAccessStream();
@@ -168,6 +168,8 @@ namespace NoHands
             await mediaCapture.StopPreviewAsync();
             captureElement.Visibility = Visibility.Collapsed;
             PreviewImage.Visibility = Visibility.Visible;
+
+            myInkCanvas.SetValue(Canvas.ZIndexProperty, 5);
 
             var _bmp = new BitmapImage();
             _bmp.SetSource(fPhotoStream);
@@ -191,6 +193,12 @@ namespace NoHands
 
             using (_antiqueEffect = new AntiqueEffect())
                 await ApplyEffectAsync(fPhotoStream, _antiqueEffect, SepiaThumb);
+
+
+            //PreviewImage.Visibility = Visibility.Collapsed;
+            myInkCanvas.Visibility = Visibility.Visible;
+
+            inking_initialization();
         }
 
         /// <summary>
