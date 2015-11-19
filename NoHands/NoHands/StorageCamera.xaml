@@ -1,0 +1,21 @@
+﻿<Page
+    x:Class="NoHands.StorageCamera"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:NoHands"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" AllowDrop="True" Drop="Grid_Drop" DragEnter="Grid_DragEnter">
+        <ListView Margin="50" Name="listView">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Image Source="{Binding Source}" Width="200" Margin="10"></Image>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </Grid>
+</Page>
