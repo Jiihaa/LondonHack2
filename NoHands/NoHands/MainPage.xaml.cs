@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.ApplicationModel.Background;
 using Windows.Devices.Enumeration;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -14,6 +15,7 @@ using Windows.Graphics.Display;
 using Windows.Media.Capture;
 using Windows.Media.MediaProperties;
 using Windows.Storage.Streams;
+using Windows.UI.Notifications;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -35,8 +37,6 @@ namespace NoHands
         bool frontCam;
         MediaCapture mediaCapture;
 
-        private SwapChainPanelRenderer m_renderer;
-
         private GrayscaleEffect _grayscaleEffect;
         private ColorBoostEffect _colorboostEffect;
         private LensBlurEffect _lensblurEffect;
@@ -52,6 +52,40 @@ namespace NoHands
 
         private async void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
+            // Unregister the old background task
+            foreach (var cur in BackgroundTaskRegistration.AllTasks)
+            {
+                if (cur.Value.Name == "Nagger")
+                {
+                    cur.Value.Unregister(true);
+                }
+            }
+
+            // Build the new background task
+            await BackgroundExecutionManager.RequestAccessAsync();
+
+            var builder = new BackgroundTaskBuilder();
+
+            builder.Name = "Nagger";
+            builder.TaskEntryPoint = "Tiler.Nag"; // namespace.class of the background task
+            builder.SetTrigger(new TimeTrigger(15, false)); // set the trigger to launch every 15 minutes, time can't be smaller, can be bigger
+
+            BackgroundTaskRegistration task = builder.Register();
+
+            BackgroundAccessStatus status = BackgroundAccessStatus.Unspecified;
+            try
+            {
+                status = await BackgroundExecutionManager.RequestAccessAsync();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                // An access denied exception may be thrown if two requests are issued at the same time
+                // For this specific sample, that could be if the user double clicks "Request access"
+            }
+
+            // Clear all old notifications when app is started
+            BadgeUpdateManager.CreateBadgeUpdaterForApplication().Clear();
+
             mediaCapture = new MediaCapture();
             DeviceInformationCollection devices = await DeviceInformation.FindAllAsync(DeviceClass.VideoCapture);
 
@@ -134,17 +168,25 @@ namespace NoHands
             var _bmp = new BitmapImage();
             _bmp.SetSource(fPhotoStream);
             PreviewImage.Source = _bmp;
-            _grayscaleEffect = new GrayscaleEffect();
-            _colorboostEffect = new ColorBoostEffect();
-            _colorboostEffect.Gain = 0.75;
-            _hueSaturationEffect = new HueSaturationEffect();
-            _lensblurEffect = new LensBlurEffect();
-            _antiqueEffect = new AntiqueEffect();
-            ApplyEffectAsync(fPhotoStream, _grayscaleEffect, GreyScaleThumb);
-            ApplyEffectAsync(fPhotoStream, _colorboostEffect, ColorBoostThumb);
-            ApplyEffectAsync(fPhotoStream, _antiqueEffect, SepiaThumb);
-            ApplyEffectAsync(fPhotoStream, _lensblurEffect, LensBlurThumb);
-            ApplyEffectAsync(fPhotoStream, _hueSaturationEffect, HueSaturationThumb);
+            NormalThumb.Source = _bmp;
+
+            using (_grayscaleEffect = new GrayscaleEffect())
+                ApplyEffectAsync(fPhotoStream, _grayscaleEffect, GreyScaleThumb);
+
+            using (_colorboostEffect = new ColorBoostEffect())
+            {
+                _colorboostEffect.Gain = 0.75;
+                ApplyEffectAsync(fPhotoStream, _colorboostEffect, ColorBoostThumb);
+            }
+
+            using (_hueSaturationEffect = new HueSaturationEffect())
+                ApplyEffectAsync(fPhotoStream, _hueSaturationEffect, HueSaturationThumb);
+
+            using (_lensblurEffect = new LensBlurEffect())
+                ApplyEffectAsync(fPhotoStream, _lensblurEffect, LensBlurThumb);
+
+            using (_antiqueEffect = new AntiqueEffect())
+                ApplyEffectAsync(fPhotoStream, _antiqueEffect, SepiaThumb);
         }
 
         /// <summary>
@@ -153,24 +195,39 @@ namespace NoHands
         /// <param name="fileStream"></param>
         private async void ApplyEffectAsync(IRandomAccessStream fileStream, IImageProvider provider, SwapChainPanel target)
         {
-            //_grayscaleEffect = new GrayscaleEffect();
-            //_colorboostEffect = new ColorBoostEffect();
-
-            m_renderer = new SwapChainPanelRenderer(provider, target);
-
-            try
+            using (var _renderer = new SwapChainPanelRenderer(provider, target))
             {
-                // Rewind the stream to start.
-                fileStream.Seek(0);
+                try
+                {
+                    // Rewind the stream to start.
+                    fileStream.Seek(0);
 
-                // Set the imageSource on the effect and render.
-                ((IImageConsumer)provider).Source = new RandomAccessStreamImageSource(fileStream);
-                await m_renderer.RenderAsync();
+                    // Set the imageSource on the effect and render.
+                    ((IImageConsumer)provider).Source = new RandomAccessStreamImageSource(fileStream);
+                    await _renderer.RenderAsync();
+                }
+                catch (Exception exception)
+                {
+                    System.Diagnostics.Debug.WriteLine(exception.Message);
+                }
             }
-            catch (Exception exception)
-            {
-                System.Diagnostics.Debug.WriteLine(exception.Message);
-            }
+        }
+
+        private void GreyScaleThumb_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            return;
+            // TODO
+            PreviewImage.Visibility = Visibility.Collapsed;
+            GreyScaleThumb.SetValue(Grid.RowProperty, 0);
+            
+            GreyScaleThumb.Width = this.ActualWidth;
+            GreyScaleThumb.Height = this.ActualHeight;
+            GreyScaleThumb.UpdateLayout();
+        }
+
+        private void ColorBoostThumb_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+
         }
     }
 }
