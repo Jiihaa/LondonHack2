@@ -13,6 +13,7 @@
             </CommandBar.Content>
             <AppBarButton Icon="Accept" Label="appbarbutton" Click="Recognize_Click"/>
             <AppBarButton Icon="Cancel" Label="appbarbutton" Click="Clear_Click"/>
+            <AppBarButton x:Name="SaveButton" Icon="Save" Label="appbarbutton" Click="Save_Click"/>
         </CommandBar>
     </Page.BottomAppBar>
 

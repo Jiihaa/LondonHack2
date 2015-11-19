@@ -286,5 +286,10 @@ namespace NoHands
         {
 
         }
+
+        private void Save_Click(object sender, RoutedEventArgs e)
+        {
+            Frame.Navigate(typeof(StorageCamera));
+        }
     }
 }
