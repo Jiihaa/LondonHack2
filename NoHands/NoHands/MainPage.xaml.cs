@@ -194,7 +194,7 @@ namespace NoHands
         }
 
         /// <summary>
-        /// TODO: Apply filter to image
+        /// Apply filter to image
         /// </summary>
         /// <param name="fileStream"></param>
         private async Task ApplyEffectAsync(IRandomAccessStream fileStream, IImageProvider provider, SwapChainPanel target)
