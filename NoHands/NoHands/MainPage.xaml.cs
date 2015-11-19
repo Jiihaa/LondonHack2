@@ -169,7 +169,7 @@ namespace NoHands
             captureElement.Visibility = Visibility.Collapsed;
             PreviewImage.Visibility = Visibility.Visible;
 
-            myInkCanvas.SetValue(Canvas.ZIndexProperty, 5);
+          
 
             var _bmp = new BitmapImage();
             _bmp.SetSource(fPhotoStream);
@@ -195,10 +195,11 @@ namespace NoHands
                 await ApplyEffectAsync(fPhotoStream, _antiqueEffect, SepiaThumb);
 
 
-            //PreviewImage.Visibility = Visibility.Collapsed;
-            myInkCanvas.Visibility = Visibility.Visible;
+            
+            
 
             inking_initialization();
+            myInkCanvas.Visibility = Visibility.Visible;
         }
 
         /// <summary>
