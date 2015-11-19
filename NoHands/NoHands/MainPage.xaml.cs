@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
 using Windows.Devices.Enumeration;
 using Windows.Foundation;
@@ -158,8 +159,8 @@ namespace NoHands
             ImageEncodingProperties imageProperties = ImageEncodingProperties.CreateJpeg();
             var fPhotoStream = new InMemoryRandomAccessStream();
 
-            await mediaCapture.CapturePhotoToStreamAsync(imageProperties, fPhotoStream);
-            await fPhotoStream.FlushAsync();
+            mediaCapture.CapturePhotoToStreamAsync(imageProperties, fPhotoStream).AsTask().Wait();
+            fPhotoStream.FlushAsync().AsTask().Wait();
             fPhotoStream.Seek(0);
             await mediaCapture.StopPreviewAsync();
             captureElement.Visibility = Visibility.Collapsed;
@@ -171,29 +172,29 @@ namespace NoHands
             NormalThumb.Source = _bmp;
 
             using (_grayscaleEffect = new GrayscaleEffect())
-                ApplyEffectAsync(fPhotoStream, _grayscaleEffect, GreyScaleThumb);
+                await ApplyEffectAsync(fPhotoStream, _grayscaleEffect, GreyScaleThumb);
 
             using (_colorboostEffect = new ColorBoostEffect())
             {
                 _colorboostEffect.Gain = 0.75;
-                ApplyEffectAsync(fPhotoStream, _colorboostEffect, ColorBoostThumb);
+                await ApplyEffectAsync(fPhotoStream, _colorboostEffect, ColorBoostThumb);
             }
 
             using (_hueSaturationEffect = new HueSaturationEffect())
-                ApplyEffectAsync(fPhotoStream, _hueSaturationEffect, HueSaturationThumb);
+                await ApplyEffectAsync(fPhotoStream, _hueSaturationEffect, HueSaturationThumb);
 
             using (_lensblurEffect = new LensBlurEffect())
-                ApplyEffectAsync(fPhotoStream, _lensblurEffect, LensBlurThumb);
+                await ApplyEffectAsync(fPhotoStream, _lensblurEffect, LensBlurThumb);
 
             using (_antiqueEffect = new AntiqueEffect())
-                ApplyEffectAsync(fPhotoStream, _antiqueEffect, SepiaThumb);
+                await ApplyEffectAsync(fPhotoStream, _antiqueEffect, SepiaThumb);
         }
 
         /// <summary>
         /// TODO: Apply filter to image
         /// </summary>
         /// <param name="fileStream"></param>
-        private async void ApplyEffectAsync(IRandomAccessStream fileStream, IImageProvider provider, SwapChainPanel target)
+        private async Task ApplyEffectAsync(IRandomAccessStream fileStream, IImageProvider provider, SwapChainPanel target)
         {
             using (var _renderer = new SwapChainPanelRenderer(provider, target))
             {
@@ -211,6 +212,7 @@ namespace NoHands
                     System.Diagnostics.Debug.WriteLine(exception.Message);
                 }
             }
+            
         }
 
         private void GreyScaleThumb_Tapped(object sender, TappedRoutedEventArgs e)
